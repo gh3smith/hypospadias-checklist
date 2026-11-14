@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Hypospadias DSD">
+<meta name="theme-color" content="#0b4f6c">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<title>Complex Hypospadias DSD Referral Checklist</title>
+<style>
+  :root {
+    --bg:#f3f5f7; --card:#fff; --ink:#1b2430; --muted:#5d6b7a; --line:#dde3e9;
+    --accent:#0b4f6c; --accent-soft:#e3f0f5; --ok:#1f7a4d; --warn:#b3541e;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#0f1418; --card:#182027; --ink:#e7edf2; --muted:#94a3b1; --line:#2a353f;
+            --accent:#5bb3d6; --accent-soft:#1c3340; --ok:#5ccf93; --warn:#f0a070; }
+  }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body { margin:0; background:var(--bg); color:var(--ink);
+    font:16px/1.4 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif; }
+  body { padding: env(safe-area-inset-top) env(safe-area-inset-right) calc(env(safe-area-inset-bottom) + 110px) env(safe-area-inset-left); }
+  header { padding:18px 16px 6px; }
+  h1 { font-size:20px; margin:0 0 4px; line-height:1.25; }
+  .sub { color:var(--muted); font-size:13px; }
+  h2 { font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted);
+       margin:22px 16px 8px; font-weight:600; }
+  .card { background:var(--card); margin:0 12px; border-radius:14px; overflow:hidden;
+          border:1px solid var(--line); }
+  .item { padding:12px 14px; border-top:1px solid var(--line); }
+  .item:first-child { border-top:0; }
+  .row { display:flex; gap:12px; align-items:flex-start; }
+  .row label.q { flex:1; font-size:15px; }
+  .num { color:var(--muted); font-weight:600; margin-right:2px; }
+  input[type=checkbox] { appearance:none; -webkit-appearance:none; flex:none; width:28px; height:28px;
+    border:2px solid var(--line); border-radius:8px; margin:0; background:var(--card); position:relative; }
+  input[type=checkbox]:checked { background:var(--ok); border-color:var(--ok); }
+  input[type=checkbox]:checked::after { content:""; position:absolute; left:8px; top:3px; width:7px; height:13px;
+    border:solid #fff; border-width:0 3px 3px 0; transform:rotate(45deg); }
+  textarea, input[type=text], input[type=email], input[type=date] {
+    width:100%; margin-top:8px; padding:10px 11px; font:inherit; font-size:16px; color:var(--ink);
+    background:var(--bg); border:1px solid var(--line); border-radius:10px; }
+  textarea { min-height:44px; resize:vertical; }
+  textarea:focus, input:focus { outline:2px solid var(--accent); outline-offset:-1px; }
+  .pair { display:grid; grid-template-columns:1.4fr 1fr; gap:8px; }
+  .pair input { margin-top:6px; }
+  .hint { font-size:12px; color:var(--muted); margin-top:4px; }
+  .note { font-size:13px; color:var(--muted); margin:8px 16px 0; }
+  .progress { font-size:13px; color:var(--muted); margin:6px 16px 0; }
+  .bar { position:fixed; left:0; right:0; bottom:0; background:var(--card); border-top:1px solid var(--line);
+    padding:10px 12px calc(env(safe-area-inset-bottom) + 10px); display:flex; gap:8px; }
+  .btn { flex:1; display:block; text-align:center; text-decoration:none; padding:14px 10px; border-radius:12px;
+    font:600 16px/1 inherit; font-family:inherit; border:0; }
+  .primary { background:var(--accent); color:#fff; }
+  @media (prefers-color-scheme: dark){ .primary{ color:#0f1418; } }
+  .ghost { background:var(--accent-soft); color:var(--accent); flex:0 0 auto; padding:14px 16px; }
+  .toast { position:fixed; left:50%; bottom:calc(env(safe-area-inset-bottom) + 84px); transform:translateX(-50%);
+    background:var(--ink); color:var(--bg); padding:10px 16px; border-radius:20px; font-size:14px;
+    opacity:0; transition:opacity .2s; pointer-events:none; white-space:nowrap; }
+  .toast.show { opacity:1; }
+  .modal { position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:flex-end; z-index:5; }
+  .modal.show { display:flex; }
+  .sheet { background:var(--card); width:100%; border-radius:16px 16px 0 0;
+    padding:18px 16px calc(env(safe-area-inset-bottom) + 16px); }
+  .sheet p { margin:0 0 14px; }
+  .sheet .btns { display:flex; gap:8px; }
+  .missing { color:var(--warn); }
+  .instr { background:var(--accent-soft); border:1px solid var(--line); border-radius:14px; margin:10px 12px 0; padding:12px 14px; font-size:14px; }
+  .instr strong { display:block; margin-bottom:6px; font-size:15px; }
+  .instr ol { margin:0; padding-left:20px; }
+  .instr li { margin:4px 0; }
+  .warnmsg { color:var(--warn); font-size:13px; margin-top:6px; display:none; }
+  .seg { display:flex; gap:8px; margin-top:10px; }
+  .seg button { flex:1; padding:11px; font:600 16px/1 inherit; font-family:inherit; border-radius:10px;
+    border:1px solid var(--line); background:var(--bg); color:var(--ink); }
+  .seg button.on[data-v=Yes] { background:var(--ok); border-color:var(--ok); color:#fff; }
+  .seg button.on[data-v=No] { background:var(--warn); border-color:var(--warn); color:#fff; }
+  .plain label.q { display:block; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Complex hypospadias – SCHN DSD group referral checklist</h1>
+  <div class="sub">Peno-scrotal hypospadias, or any hypospadias with undescended testis, microphallus or bifid scrotum, prior to surgery.</div>
+</header>
+
+<div class="instr">
+  <strong>Use NSW Health email only</strong>
+  <ol>
+    <li><b>Send to</b> an address ending in <b>@health.nsw.gov.au</b> (entered below).</li>
+    <li><b>Send from</b> your NSW Health account: make it the default in iPhone <b>Settings › Apps › Mail › Default Account</b> (older iOS: Settings › Mail), or tap the <b>From</b> line in the draft and choose your @health.nsw.gov.au address before sending.</li>
+    <li>If you use the Outlook app for NSW Health mail, set it as your default mail app (Settings › Apps › Default Apps › Email) so the Email button opens it.</li>
+    <li>Check the From and To lines before tapping Send. Do not send from or to a personal email account.</li>
+  </ol>
+</div>
+
+<h2>Send to</h2>
+<div class="card"><div class="item">
+  <label class="q" for="email">Email address (remembered)</label>
+  <input id="email" type="email" inputmode="email" autocomplete="email" autocapitalize="off" placeholder="firstname.lastname@health.nsw.gov.au">
+  <div class="warnmsg" id="emailwarn">This is not a @health.nsw.gov.au address.</div>
+</div></div>
+
+<form id="f" autocomplete="off" onsubmit="return false">
+<h2>Patient &amp; referral details</h2>
+<div class="card" id="details"></div>
+
+<h2>Checklist</h2>
+<div class="card" id="checklist"></div>
+<div class="progress" id="progress"></div>
+
+<h2>Sign-off</h2>
+<div class="card" id="signoff"></div>
+<p class="note">Treating doctors to discuss completed checklist with patient/parents/carers and file in patient medical record. Referrals go to Shubha Srinivasan (CHW) or Kris Neville (SCH).</p>
+</form>
+
+<div class="bar">
+  <button class="btn ghost" id="clear" type="button">Clear</button>
+  <button class="btn ghost" id="copy" type="button">Copy</button>
+  <a class="btn primary" id="send" href="mailto:">Email</a>
+</div>
+<div class="toast" id="toast"></div>
+<div class="modal" id="modal"><div class="sheet">
+  <p>Clear all patient entries? The email address is kept.</p>
+  <div class="btns"><button class="btn ghost" style="flex:1" id="cancel" type="button">Cancel</button>
+  <button class="btn primary" id="confirm" type="button">Clear form</button></div>
+</div></div>
+
+<script>
+const DETAILS = [
+  {id:"d1", n:"1", q:"Child's initials, month/year of birth", text:true},
+  {id:"d2", n:"2", q:"Treating clinicians (all treating clinicians, e.g. surgeons, endocrinologists, to review the referral prior to submission)", text:true},
+  {id:"d3", n:"3", q:"Patient/parents/carers informed and consent documented in medical records that the case will be referred to the MDT meeting", yesno:true},
+  {id:"d4", n:"4", q:"Brief clinical history and examination", tall:true, text:true},
+];
+const CHECKS = [
+  {id:"c1", q:"46XY karyotype"},
+  {id:"c2", q:"Discussion has occurred and there is consensus between parents and clinicians with male sex of rearing and that the proposed intervention/surgery supports the welfare and best interests of this child – with consideration of context, culture and their future wellbeing."},
+  {id:"c3", q:"Proteinuria/renal abnormalities have been considered, and if found, have been addressed and are stable."},
+  {id:"c4", q:"CGH array +/- DNA for DSD panel arranged, preferably in conjunction with genetics counsellor, and results reviewed."},
+  {id:"c5", q:"Hormone profile confirms normal testosterone production (mini puberty/HCG stimulation test).", hint:"Include age at time of test, results and reference range"},
+  {id:"c6", q:"Any decision for testosterone or DHT treatment pre-op has been discussed with the parents."},
+  {id:"c7", q:"Pre-op clinical photography offered to parents and if consented to, photographs are filed in medical records as per local data storage policy."},
+  {id:"c8", q:"Documentation in notes that parents have been given the option to defer surgery until child can be involved in assent/informed consent for surgery."},
+  {id:"c9", q:"Documentation in notes that parents are aware of potential complications and that multiple surgeries may be required."},
+  {id:"c10", q:"Documentation in notes that parents are aware of the potential that the child may consider that surgery has impaired function (sexual and/or urological) and cosmetic appearance of the genitalia."},
+  {id:"c11", q:"Documentation in notes about discussion with parents that child will be offered psychological support if they have any concerns about the function and/or appearance of their genitalia in the future."},
+];
+const SIGNOFF = [
+  {id:"s1", q:"Referral submitted by", date:true},
+  {id:"s2", q:"Checklist reviewed by", date:true},
+];
+
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;");}
+function detailHTML(it){
+  let h = `<div class="item plain"><label class="q" for="${it.id}_t"><span class="num">${it.n}.</span> ${esc(it.q)}</label>`;
+  if (it.yesno) h += `<div class="seg" id="${it.id}_seg"><button type="button" data-v="Yes">Yes</button><button type="button" data-v="No">No</button></div>`;
+  h += `<textarea id="${it.id}_t" rows="${it.tall?4:1}" placeholder="${it.yesno?"Comment (optional)":""}"></textarea>`;
+  return h + `</div>`;
+}
+function itemHTML(it, num){
+  let h = `<div class="item"><div class="row">
+    <input type="checkbox" id="${it.id}_y" aria-label="Yes">
+    <label class="q" for="${it.id}_y">${num?`<span class="num">${num}.</span> `:""}${esc(it.q)}</label></div>`;
+  h += `<textarea id="${it.id}_t" rows="${it.tall?4:1}" placeholder="${it.hint?esc(it.hint):"Results / comment"}"></textarea>`;
+  if (it.hint) h += `<div class="hint">${esc(it.hint)}</div>`;
+  h += `<div class="pair"><input type="text" class="docby" id="${it.id}_by" placeholder="Documented by" autocapitalize="words"><input type="date" class="dt" id="${it.id}_on" aria-label="Documented on"></div>`;
+  return h + `</div>`;
+}
+function signHTML(it){
+  return `<div class="item"><div class="row">
+    <input type="checkbox" id="${it.id}_y" aria-label="Done">
+    <label class="q" for="${it.id}_y">${esc(it.q)}</label></div>
+    <div class="pair"><input type="text" id="${it.id}_t" placeholder="Name"><input type="date" class="dt" id="${it.id}_on" aria-label="Date"></div></div>`;
+}
+document.getElementById("details").innerHTML = DETAILS.map(detailHTML).join("");
+document.getElementById("checklist").innerHTML = CHECKS.map((c,i)=>itemHTML(c,i+1)).join("");
+document.getElementById("signoff").innerHTML = SIGNOFF.map(signHTML).join("");
+
+const $ = id => document.getElementById(id);
+const val = id => ($(id) ? $(id).value.trim() : "");
+const yn = id => $(id).checked ? "YES" : "no";
+function fmtDate(v){ if(!v) return ""; const [y,m,d]=v.split("-"); return `${d}/${m}/${y}`; }
+
+// Remember last email
+const KEY = "hypoChecklist.lastEmail";
+try { const e = localStorage.getItem(KEY); if (e) $("email").value = e; } catch(e){}
+function saveEmail(){ try { localStorage.setItem(KEY, val("email")); } catch(e){} }
+$("email").addEventListener("change", saveEmail);
+
+const NKEY = "hypoChecklist.lastName";
+const seg = {};
+function today(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function lastName(){ try { return localStorage.getItem(NKEY)||""; } catch(e){ return ""; } }
+function applyDefaults(){
+  const n = lastName();
+  document.querySelectorAll(".docby").forEach(i=>{ if(!i.value) i.value = n; });
+  document.querySelectorAll(".dt").forEach(i=>{ if(!i.value) i.value = today(); });
+  DETAILS.filter(d=>d.yesno).forEach(d=>{ delete seg[d.id]; $(d.id+"_seg").querySelectorAll("button").forEach(b=>b.classList.remove("on")); });
+}
+document.querySelectorAll(".docby").forEach(inp=>{
+  inp.addEventListener("change", ()=>{
+    const v = inp.value.trim(); if (!v) return;
+    const prev = lastName();
+    try { localStorage.setItem(NKEY, v); } catch(e){}
+    // fill other fields that are empty or still hold the previous remembered name
+    document.querySelectorAll(".docby").forEach(o=>{ if (o!==inp && (!o.value.trim() || o.value.trim()===prev)) o.value = v; });
+    update();
+  });
+});
+DETAILS.filter(d=>d.yesno).forEach(d=>{
+  $(d.id+"_seg").addEventListener("click", e=>{
+    const b = e.target.closest("button"); if(!b) return;
+    seg[d.id] = b.dataset.v;
+    $(d.id+"_seg").querySelectorAll("button").forEach(x=>x.classList.toggle("on", x===b));
+    update();
+  });
+});
+applyDefaults();
+
+function buildBody(){
+  const L = [];
+  L.push("CHECKLIST REFERRAL FOR COMPLEX HYPOSPADIAS TO SCHN DSD GROUP");
+  L.push("");
+  DETAILS.forEach(d=>{
+    L.push(`${d.n}. ${d.q}`);
+    if (d.yesno) L.push(`   ${seg[d.id] || "— (not answered)"}${val(d.id+"_t") ? "  – " + val(d.id+"_t") : ""}`);
+    else L.push(`   ${val(d.id+"_t") || "—"}`);
+    L.push("");
+  });
+  L.push("5. CHECKLIST");
+  CHECKS.forEach((c,i)=>{
+    L.push(`${i+1}) ${c.q}`);
+    L.push(`   Y/N: ${yn(c.id+"_y")}`);
+    if (val(c.id+"_t")) L.push(`   Results/comment: ${val(c.id+"_t")}`);
+    L.push(`   Documented in medical record by: ${val(c.id+"_by")||"—"}  On: ${fmtDate(val(c.id+"_on"))||"—"}`);
+    L.push("");
+  });
+  SIGNOFF.forEach(s=>{
+    L.push(`${s.q}: ${val(s.id+"_t")||"—"}   Date: ${fmtDate(val(s.id+"_on"))||"—"}   [${yn(s.id+"_y")}]`);
+  });
+  const done = CHECKS.filter(c=>$(c.id+"_y").checked).length;
+  L.push("");
+  L.push(`Checklist items ticked: ${done}/${CHECKS.length}`);
+  return L.join("\r\n");
+}
+function subject(){
+  const pt = val("d1_t");
+  return "Complex hypospadias DSD referral checklist" + (pt ? " – " + pt : "");
+}
+function update(){
+  const href = "mailto:" + encodeURIComponent(val("email")).replace(/%40/g,"@") +
+    "?subject=" + encodeURIComponent(subject()) + "&body=" + encodeURIComponent(buildBody());
+  $("send").href = href;
+  const em = val("email").toLowerCase();
+  $("emailwarn").style.display = (em && !em.endsWith("@health.nsw.gov.au")) ? "block" : "none";
+  const done = CHECKS.filter(c=>$(c.id+"_y").checked).length;
+  const p = $("progress");
+  p.textContent = `${done} of ${CHECKS.length} checklist items ticked`;
+  p.className = "progress" + (done < CHECKS.length ? " missing" : "");
+}
+document.addEventListener("input", update);
+document.addEventListener("change", update);
+update();
+
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),2200); }
+
+$("send").addEventListener("click", e=>{
+  if (!val("email")) { e.preventDefault(); $("email").focus(); toast("Enter an email address first"); return; }
+  if (!val("email").toLowerCase().endsWith("@health.nsw.gov.au")) { e.preventDefault(); $("email").focus(); toast("Use a @health.nsw.gov.au address"); return; }
+  saveEmail(); update();
+  toast("Opening Mail… if nothing opens, use Copy");
+});
+$("copy").addEventListener("click", async ()=>{
+  const text = subject() + "\r\n\r\n" + buildBody();
+  try { await navigator.clipboard.writeText(text); toast("Copied – paste into an email"); }
+  catch(e){ toast("Copy not allowed here"); }
+});
+$("clear").addEventListener("click", ()=> $("modal").classList.add("show"));
+$("cancel").addEventListener("click", ()=> $("modal").classList.remove("show"));
+$("confirm").addEventListener("click", ()=>{
+  const keep = val("email"); $("f").reset(); $("email").value = keep; applyDefaults();
+  $("modal").classList.remove("show"); update(); window.scrollTo(0,0); toast("Form cleared");
+});
+if ("serviceWorker" in navigator) { try { navigator.serviceWorker.register("sw.js"); } catch(e){} }
+</script>
+</body>
+</html>
