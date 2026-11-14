@@ -109,6 +109,11 @@
 <div class="card" id="details"></div>
 
 <h2>Checklist</h2>
+<div class="card" style="margin-bottom:10px"><div class="item">
+  <label class="q" for="defname">Documented by – default name (remembered)</label>
+  <input type="text" id="defname" autocapitalize="words" placeholder="e.g. Dr H Smith">
+  <div class="hint">Fills every item below. You can change the name on any single item.</div>
+</div></div>
 <div class="card" id="checklist"></div>
 <div class="progress" id="progress"></div>
 
@@ -197,19 +202,20 @@ function today(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMon
 function lastName(){ try { return localStorage.getItem(NKEY)||""; } catch(e){ return ""; } }
 function applyDefaults(){
   const n = lastName();
-  document.querySelectorAll(".docby").forEach(i=>{ if(!i.value) i.value = n; });
+  $("defname").value = n;
+  document.querySelectorAll(".docby").forEach(i=>{ delete i.dataset.edited; i.value = n; });
   document.querySelectorAll(".dt").forEach(i=>{ if(!i.value) i.value = today(); });
   DETAILS.filter(d=>d.yesno).forEach(d=>{ delete seg[d.id]; $(d.id+"_seg").querySelectorAll("button").forEach(b=>b.classList.remove("on")); });
 }
+// Items edited individually are marked and no longer follow the default name
 document.querySelectorAll(".docby").forEach(inp=>{
-  inp.addEventListener("change", ()=>{
-    const v = inp.value.trim(); if (!v) return;
-    const prev = lastName();
-    try { localStorage.setItem(NKEY, v); } catch(e){}
-    // fill other fields that are empty or still hold the previous remembered name
-    document.querySelectorAll(".docby").forEach(o=>{ if (o!==inp && (!o.value.trim() || o.value.trim()===prev)) o.value = v; });
-    update();
-  });
+  inp.addEventListener("input", ()=>{ inp.dataset.edited = "1"; });
+});
+$("defname").addEventListener("input", ()=>{
+  const v = $("defname").value;
+  try { localStorage.setItem(NKEY, v.trim()); } catch(e){}
+  document.querySelectorAll(".docby").forEach(o=>{ if (!o.dataset.edited) o.value = v; });
+  update();
 });
 DETAILS.filter(d=>d.yesno).forEach(d=>{
   $(d.id+"_seg").addEventListener("click", e=>{
@@ -282,10 +288,10 @@ $("copy").addEventListener("click", async ()=>{
 $("clear").addEventListener("click", ()=> $("modal").classList.add("show"));
 $("cancel").addEventListener("click", ()=> $("modal").classList.remove("show"));
 $("confirm").addEventListener("click", ()=>{
-  const keep = val("email"); $("f").reset(); $("email").value = keep; applyDefaults();
+  const keep = val("email"); $("f").reset(); $("defname").value = lastName(); $("email").value = keep; applyDefaults();
   $("modal").classList.remove("show"); update(); window.scrollTo(0,0); toast("Form cleared");
 });
-if ("serviceWorker" in navigator) { try { navigator.serviceWorker.register("sw.js"); } catch(e){} }
+if ("serviceWorker" in navigator) { try { navigator.serviceWorker.register("sw.js").catch(()=>{}); } catch(e){} }
 </script>
 </body>
 </html>
