@@ -207,6 +207,7 @@ function applyDefaults(){
   const n = lastName();
   $("defname").value = n;
   document.querySelectorAll(".docby").forEach(i=>{ delete i.dataset.edited; i.value = n; });
+  CHECKS.forEach(c=>{ delete $(c.id+"_wh").dataset.edited; });
   document.querySelectorAll(".dt").forEach(i=>{ if(!i.value) i.value = today(); });
   DETAILS.filter(d=>d.yesno).forEach(d=>{ delete seg[d.id]; $(d.id+"_seg").querySelectorAll("button").forEach(b=>b.classList.remove("on")); });
 }
@@ -214,6 +215,13 @@ function applyDefaults(){
 document.querySelectorAll(".docby").forEach(inp=>{
   inp.addEventListener("input", ()=>{ inp.dataset.edited = "1"; });
 });
+// "Where?" on item 1 fills the other items unless they were edited individually
+$("c1_wh").addEventListener("input", ()=>{
+  const v = $("c1_wh").value;
+  CHECKS.slice(1).forEach(c=>{ const o=$(c.id+"_wh"); if (!o.dataset.edited) o.value = v; });
+  update();
+});
+CHECKS.slice(1).forEach(c=>{ $(c.id+"_wh").addEventListener("input", e=>{ e.target.dataset.edited = "1"; }); });
 $("defname").addEventListener("input", ()=>{
   const v = $("defname").value;
   try { localStorage.setItem(NKEY, v.trim()); } catch(e){}
