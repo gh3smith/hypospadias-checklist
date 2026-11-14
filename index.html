@@ -47,6 +47,9 @@
   textarea:focus, input:focus { outline:2px solid var(--accent); outline-offset:-1px; }
   .pair { display:grid; grid-template-columns:1.4fr 1fr; gap:8px; }
   .pair input { margin-top:6px; }
+  .trio { display:grid; grid-template-columns:1fr 1fr; gap:0 8px; }
+  .trio input { margin-top:6px; }
+  .trio .full { grid-column:1 / -1; }
   .hint { font-size:12px; color:var(--muted); margin-top:4px; }
   .note { font-size:13px; color:var(--muted); margin:8px 16px 0; }
   .progress { font-size:13px; color:var(--muted); margin:6px 16px 0; }
@@ -172,7 +175,7 @@ function itemHTML(it, num){
     <label class="q" for="${it.id}_y">${num?`<span class="num">${num}.</span> `:""}${esc(it.q)}</label></div>`;
   h += `<textarea id="${it.id}_t" rows="${it.tall?4:1}" placeholder="${it.hint?esc(it.hint):"Results / comment"}"></textarea>`;
   if (it.hint) h += `<div class="hint">${esc(it.hint)}</div>`;
-  h += `<div class="pair"><input type="text" class="docby" id="${it.id}_by" placeholder="Documented by" autocapitalize="words"><input type="date" class="dt" id="${it.id}_on" aria-label="Documented on"></div>`;
+  h += `<div class="trio"><input type="text" class="docby" id="${it.id}_by" placeholder="Documented by" autocapitalize="words"><input type="text" id="${it.id}_wh" placeholder="Where? (e.g. eMR)"><input type="date" class="dt full" id="${it.id}_on" aria-label="Documented on"></div>`;
   return h + `</div>`;
 }
 function signHTML(it){
@@ -242,7 +245,7 @@ function buildBody(){
     L.push(`${i+1}) ${c.q}`);
     L.push(`   Y/N: ${yn(c.id+"_y")}`);
     if (val(c.id+"_t")) L.push(`   Results/comment: ${val(c.id+"_t")}`);
-    L.push(`   Documented in medical record by: ${val(c.id+"_by")||"—"}  On: ${fmtDate(val(c.id+"_on"))||"—"}`);
+    L.push(`   Documented by: ${val(c.id+"_by")||"—"}  Where: ${val(c.id+"_wh")||"—"}  On: ${fmtDate(val(c.id+"_on"))||"—"}`);
     L.push("");
   });
   SIGNOFF.forEach(s=>{
